@@ -1,7 +1,7 @@
 const express = require('express');
-const multer = require('multer');
-const ajv = require('ajv');
-const { default: Ajv } = require('ajv');
+const upload = require('multer')();
+const Ajv = require('ajv');
+// const { default: Ajv } = require('ajv');
 
 const server = express();
 
@@ -14,29 +14,38 @@ server.get('/', (req, res) => {
    res.render('index');
 });
 
-server.post('/', async (req, res) => {
+server.post('/formUser', upload.none(), async (req, res, next) => {
    
-   const schema ={
+   console.log(req.body);
+   const obj = req.body;
+   const pattern = /^(0?[1-9]|[12][0-9]|3[01])[\-\s\/\.](0?[1-9]|1[012])[\-\s\/\.](19|20)?[0-9]{2}$/;
+
+   const testData = pattern.test(obj.dataBirthday);
+   const schema = {
       type: 'object',
       properties: {
          name: { type: 'string'},
          surname: { type: 'string'},
-         DataBirthday: { type: 'integer'},
+         dataBirthday: { type: 'string'},
       },
-      required: ['name','surname','DataBirthday'],
-      addionalPropertios: false
+      required: ['name','surname','dataBirthday'],
+      additionalProperties: false
    };
    const ajv = new Ajv();
 
-   const validate = ajv.complite(schema);
+   const validate = ajv.compile(schema);
    const valid = validate(req.body);
-
+   
    if (!valid){
-      naxt();
+      const result = {status: 'invalid data', payload: validate.errors};
+      res.json( result );
       return;
    }
-   const result = {status: 'invalid data', payload: validate.errors};
-   res.json( result );
+   if(testData !== true){
+      console.log( 'invalid dataBirthdey');
+   }
+   
+   res.json( {status: 'ok'} );
 });
 
 server.listen(3000, () => {

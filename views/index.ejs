@@ -14,11 +14,11 @@
 </head>
 <body>
    <div class="wraper">
-      <form name="userNameForm">
+      <form name="userNameForm" enctype="multipart/form-data">
          <div>
-            <input type="text" name="Name">Name</input>
-            <input type="text" name="Surname">Surname</input>
-            <input type="text" name="DataBirthday">Data birthday</input>
+            <input type="text" name="name">Name</input>
+            <input type="text" name="surname">Surname</input>
+            <input type="text" name="dataBirthday">Data birthday</input>
             <input type="submit" value="submit" name="submitBtnForm">Отправить</input>
          </div>
       </form>
@@ -26,13 +26,12 @@
 
    <script>
       const formEl = document.forms.userNameForm;
-      formEl.addEventlistener("submit", async (ev) => {
+      formEl.addEventListener('submit', async (ev) => {
          ev.preventDefault();
-         const FormData = new FormData(ev.target);
+         const formData = new FormData(ev.target);
          
-            const data = await axios.post('/formUser', FormData);
+            const data = await axios.post('/formUser', formData);
             console.log('fullObj:', data);
-            console.log('k:', data.getAll('Name',"Surname","DataBirthday"));
       });
    </script>
 </body>
